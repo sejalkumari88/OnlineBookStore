@@ -1,0 +1,30 @@
+﻿@model IEnumerable<OnlineBookStore.Models.User>
+
+<h2>All Users</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>UserID</th>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.UserID</td>
+                <td>@user.FullName</td>
+                <td>@user.Email</td>
+                <td>@user.Role</td>
+                <td>
+                    <a asp-action="Delete" asp-route-id="@user.UserID" class="btn btn-danger btn-sm"
+                       onclick="return confirm('Are you sure you want to delete this user?');">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

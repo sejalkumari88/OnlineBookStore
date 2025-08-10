@@ -1,0 +1,135 @@
+﻿@model IEnumerable<OnlineBookStore.Models.Book>
+
+@{
+    ViewData["Title"] = "Home Page";
+    var featuredBooks = Model.Take(4).ToList();
+}
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+    <div class="container">
+        <a class="navbar-brand fw-bold text-primary" href="/">📚 BookStore</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto fw-semibold">
+                <li class="nav-item"><a class="nav-link active" href="/">🏠 Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="/Books">📚 Books</a></li>
+                <li class="nav-item"><a class="nav-link" href="/Cart">🛒 Cart</a></li>
+                <li class="nav-item"><a class="nav-link" href="/Wishlist">❤️ Wishlist</a></li>
+                <li class="nav-item"><a class="nav-link" href="/Account/Login">👤 Account</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Banner -->
+<div class="banner text-center text-dark py-5 mb-4" style="background: linear-gradient(135deg, #f8f9fa, #ffffff); border-radius: 8px;">
+    <h1 class="display-5 fw-bold mb-3">Discover Your Next Favorite Book 📖</h1>
+    <p class="lead text-muted mb-4">Best collection of books at unbeatable prices!</p>
+    <a href="/Books" class="btn btn-warning btn-lg fw-bold shadow-sm">Shop Now →</a>
+</div>
+
+<div class="container mt-4">
+
+    <!-- Search & Filter -->
+    <form asp-controller="Home" asp-action="Index" method="get" class="row mb-4">
+        <div class="col-md-5 mb-2">
+            <input type="text" name="searchString" class="form-control rounded-pill shadow-sm" placeholder="🔍 Search books..." value="@Context.Request.Query["searchString"]" />
+        </div>
+        <div class="col-md-4 mb-2">
+            <select name="genre" class="form-select rounded-pill shadow-sm">
+                <option value="">All Categories</option>
+                @foreach (var genre in ViewBag.Genres as List<string>)
+                {
+                    <option value="@genre" selected="@(Context.Request.Query["genre"] == genre ? "selected" : null)">
+                        @genre
+                    </option>
+                }
+            </select>
+        </div>
+        <div class="col-md-3 mb-2">
+            <button type="submit" class="btn btn-dark w-100 rounded-pill shadow-sm">Search 🔎</button>
+        </div>
+    </form>
+
+    <!-- Featured Books -->
+    <h3 class="mb-3 fw-bold text-secondary">🌟 Featured Books</h3>
+    <div class="row mb-5">
+        @foreach (var book in featuredBooks)
+        {
+            <div class="col-md-3 mb-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4 hover-card">
+                    <img src="@(string.IsNullOrEmpty(book.CoverImage)
+                                                          ? Url.Content("~/images/no-image.png")
+                                                          : (book.CoverImage.StartsWith("/images/")
+                                                              ? book.CoverImage
+                                                              : Url.Content("~/images/" + book.CoverImage)))"
+                     alt="@book.Title"
+                     class="card-img-top"
+                     style="height: 250px; object-fit: contain; background: #f9f9f9; border-radius: 8px;" />
+                <div class="card-body text-center">
+                    <h6 class="fw-bold">@book.Title</h6>
+                    <p class="text-muted small mb-1">By @book.Author</p>
+                    <p class="text-success fw-bold">₹@book.Price</p>
+                    <a asp-controller="Books" asp-action="Details" asp-route-id="@book.BookID" class="btn btn-outline-dark w-100 rounded-pill">View Details</a>
+                </div>
+            </div>
+        </div>
+                }
+    </div>
+
+    <!-- All Books -->
+    <h3 class="mb-3 fw-bold text-secondary">📚 All Books</h3>
+    <div class="row">
+        @foreach (var book in Model)
+        {
+            <div class="col-md-3 mb-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4 hover-card">
+                    <img src="@(string.IsNullOrEmpty(book.CoverImage)
+                                                          ? Url.Content("~/images/no-image.png")
+                                                          : (book.CoverImage.StartsWith("/images/")
+                                                              ? book.CoverImage
+                                                              : Url.Content("~/images/" + book.CoverImage)))"
+                     alt="@book.Title"
+                     class="card-img-top"
+                     style="height: 250px; object-fit: contain; background: #f9f9f9; border-radius: 8px;" />
+                <div class="card-body text-center">
+                    <h6 class="fw-bold">@book.Title</h6>
+                    <p class="text-muted small mb-1">By @book.Author</p>
+                    <p class="text-success fw-bold">₹@book.Price</p>
+                    <div class="d-grid gap-2">
+                        <a asp-controller="Books" asp-action="Details" asp-route-id="@book.BookID" class="btn btn-outline-dark rounded-pill">View Details</a>
+                        <form asp-controller="Cart" asp-action="Add" method="post" class="d-inline">
+                            <input type="hidden" name="bookId" value="@book.BookID" />
+                            <input type="hidden" name="quantity" value="1" />
+                            <button type="submit" class="btn btn-warning text-dark fw-bold rounded-pill">🛒 Add to Cart</button>
+                        </form>
+                        <form asp-controller="Wishlist" asp-action="Add" method="post" class="d-inline">
+                            <input type="hidden" name="bookId" value="@book.BookID" />
+                            <button type="submit" class="btn btn-outline-danger rounded-pill">❤️ Wishlist</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+                }
+    </div>
+</div>
+
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+
+    .hover-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .hover-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+</style>
+<a href="c:\users\radhika\source\repos\onlinebookstore\views\home\index.cshtml">c:\users\radhika\source\repos\onlinebookstore\views\home\index.cshtml</a>

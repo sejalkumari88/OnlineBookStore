@@ -1,0 +1,104 @@
+﻿@model OnlineBookStore.Models.Order
+@{
+    ViewData["Title"] = "Order Confirmation";
+}
+
+<div class="container mt-5">
+    <!-- Thank You Message -->
+    <div class="text-center mb-4">
+        <h2 class="text-success fw-bold">✅ Thank You for Your Purchase!</h2>
+        <p class="text-muted fs-5">Your order has been successfully placed and is being processed.</p>
+        <p class="fw-bold text-primary">Estimated Delivery: <span class="text-dark">3-5 Business Days</span></p>
+    </div>
+
+    <!-- Order Summary -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">📦 Order Summary</h4>
+            <span class="badge bg-light text-dark fs-6">Order ID: #@Model.OrderID</span>
+        </div>
+        <div class="card-body">
+            <p><strong>Shipping Address:</strong> @Model.ShippingAddress</p>
+            <p><strong>Order Date:</strong> @Model.OrderDate.ToString("dd MMM yyyy hh:mm tt")</p>
+            <p>
+                <strong>Payment Method:</strong>
+                @if (Model.PaymentMethod == "COD")
+                {
+                    <span class="badge bg-warning text-dark">Cash on Delivery</span>
+                }
+                else
+                {
+                    <span class="badge bg-info text-dark">Online Payment</span>
+                }
+            </p>
+
+            <!-- Payment Info -->
+            @if (Model.PaymentMethod == "Online")
+            {
+                <p>
+                    <strong>Payment Status:</strong>
+                    @if (Model.Status == "Paid")
+                    {
+                        <span class="badge bg-success">Paid ✅</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Payment Pending ❌</span>
+                    }
+                </p>
+                @if (!string.IsNullOrEmpty(Model.RazorpayPaymentId))
+                {
+                    <p>
+                        <strong>Payment ID:</strong>
+                        <span class="text-primary">@Model.RazorpayPaymentId</span>
+                    </p>
+                }
+            }
+        </div>
+    </div>
+
+    <!-- Order Items -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h4 class="mb-0">📚 Ordered Items</h4>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Book</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.OrderDetails)
+                    {
+                        <tr>
+                            <td>@item.Book.Title</td>
+                            <td>@item.Quantity</td>
+                            <td>₹@item.Price.ToString("F2")</td>
+                            <td>₹@(item.Price* item.Quantity).ToString("F2")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer text-end">
+            <h5 class="fw-bold text-primary">
+                Total Amount: ₹@Model.TotalAmount.ToString("F2")
+            </h5>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="text-center mt-4">
+        <a asp-controller="Home" asp-action="Index" class="btn btn-primary btn-lg me-2">
+            🏠 Continue Shopping
+        </a>
+        <a asp-controller="Orders" asp-action="MyOrders" class="btn btn-secondary btn-lg">
+            📄 View My Orders
+        </a>
+    </div>
+</div>

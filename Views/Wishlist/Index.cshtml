@@ -1,0 +1,38 @@
+﻿@model IEnumerable<OnlineBookStore.Models.Wishlist>
+
+@{
+    ViewData["Title"] = "Your Wishlist";
+}
+
+<h2>Your Wishlist</h2>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">Your wishlist is empty.</div>
+}
+else
+{
+    <table class="table table-bordered table-hover text-center align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>Book</th>
+                <th>Price</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Book.Title</td>
+                    <td>₹ @item.Book.Price.ToString("F2")</td>
+                    <td>
+                        <a asp-controller="Books" asp-action="Details" asp-route-id="@item.BookID" class="btn btn-info btn-sm me-2">View</a>
+                        <a asp-controller="Wishlist" asp-action="MoveToCart" asp-route-id="@item.WishlistID" class="btn btn-success btn-sm me-2">🛒 Move to Cart</a>
+                        <a asp-controller="Wishlist" asp-action="Remove" asp-route-id="@item.WishlistID" class="btn btn-danger btn-sm">❌ Remove</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

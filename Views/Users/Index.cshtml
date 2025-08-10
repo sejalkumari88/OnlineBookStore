@@ -1,0 +1,28 @@
+﻿@model IEnumerable<OnlineBookStore.Models.User>
+
+<h2>User List</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.FullName</td>
+                <td>@user.Email</td>
+                <td>@user.Role</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@user.UserID">Edit</a> |
+                    <a asp-action="Delete" asp-route-id="@user.UserID">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

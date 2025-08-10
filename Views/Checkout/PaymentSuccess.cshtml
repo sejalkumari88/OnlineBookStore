@@ -1,0 +1,47 @@
+﻿@{
+    ViewData["Title"] = "Payment Successful";
+    var paymentId = ViewBag.PaymentId ?? "N/A";
+    var orderId = ViewBag.OrderId ?? "N/A";
+    var amount = ViewBag.Amount ?? 0.0;
+}
+
+<div class="container mt-5 text-center">
+    <div class="card shadow-lg p-4 border-0 rounded-4">
+        <div class="mb-3">
+            <img src="https://img.icons8.com/color/96/checked--v1.png" alt="Success" />
+        </div>
+        <h2 class="text-success fw-bold">✅ Payment Successful!</h2>
+        <p class="text-muted">Thank you for your purchase. Your payment has been confirmed.</p>
+
+        <h4 class="mt-3">
+            💰 Amount Paid:
+            <span class="text-primary">₹@Convert.ToDecimal(amount).ToString("F2")</span>
+
+        </h4>
+        <p><strong>Payment ID:</strong> @paymentId</p>
+        <p><strong>Order ID:</strong> #@orderId</p>
+
+        <div class="alert alert-info mt-4">
+            You will be redirected to your <strong>Order Confirmation</strong> page in
+            <span id="countdown" class="fw-bold">5</span> seconds.
+        </div>
+
+        <a asp-controller="Checkout" asp-action="OrderConfirmation" asp-route-orderId="@orderId"
+           class="btn btn-primary btn-lg mt-3">
+            Go to Order Confirmation
+        </a>
+    </div>
+</div>
+
+<script>
+    let countdown = 5;
+    let countdownElement = document.getElementById("countdown");
+    let interval = setInterval(function () {
+        countdown--;
+        countdownElement.textContent = countdown;
+        if (countdown <= 0) {
+            clearInterval(interval);
+            window.location.href = "/Checkout/OrderConfirmation?orderId=@orderId";
+        }
+    }, 1000);
+</script>

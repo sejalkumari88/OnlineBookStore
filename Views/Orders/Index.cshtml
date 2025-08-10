@@ -1,0 +1,69 @@
+﻿@model IEnumerable<OnlineBookStore.Models.Order>
+
+@{
+    ViewData["Title"] = "My Orders";
+}
+
+<div class="container mt-5">
+    <div class="text-center mb-4">
+        <h2 class="fw-bold text-primary">📦 My Orders</h2>
+        <p class="text-muted">Track and view your recent purchases</p>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center shadow-sm">
+            You haven't placed any orders yet. <a asp-controller="Books" asp-action="Index" class="alert-link">Shop Now</a> 📚
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark text-white">
+                <h4 class="mb-0">Your Orders</h4>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Order Date</th>
+                            <th>Total Amount</th>
+                            <th>Status</th>
+                            <th>Shipping Address</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Model)
+                        {
+                            <tr>
+                                <td>@order.OrderDate.ToString("dd MMM yyyy")</td>
+                                <td>₹@order.TotalAmount.ToString("F2")</td>
+                                <td>
+                                    @if (order.Status == "Delivered")
+                                    {
+                                        <span class="badge bg-success">Delivered</span>
+                                    }
+                                    else if (order.Status == "Pending")
+                                    {
+                                        <span class="badge bg-warning text-dark">Pending</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">@order.Status</span>
+                                    }
+                                </td>
+                                <td>@order.ShippingAddress</td>
+                                <td>
+                                    <a asp-action="Details" asp-route-id="@order.OrderID" class="btn btn-info btn-sm">
+                                        📄 View Details
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

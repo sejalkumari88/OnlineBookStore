@@ -1,0 +1,59 @@
+﻿@model OnlineBookStore.Models.Book
+
+@{
+    ViewData["Title"] = "Added to Cart";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow-lg p-4 text-center rounded-4">
+                <div class="mb-3">
+                    <img src="@(string.IsNullOrEmpty(Model.CoverImage)
+                                                         ? Url.Content("~/images/no-image.png")
+                                                         : Url.Content("~/images/" + Model.CoverImage))"
+                         alt="@Model.Title"
+                         class="img-fluid rounded shadow"
+                         style="height: 200px; width: auto; object-fit: cover;" />
+                </div>
+
+                <h2 class="text-success mb-3">✅ Added to Cart!</h2>
+                <p class="fs-5">
+                    <strong>@Model.Title</strong> by <em>@Model.Author</em> has been successfully added to your cart.
+                </p>
+
+                <div class="mt-4 d-flex justify-content-center gap-3">
+                    <a asp-controller="Books" asp-action="Index"
+                       class="btn btn-outline-primary btn-lg rounded-pill px-4">
+                        🛍 Continue Shopping
+                    </a>
+                    <a asp-controller="Cart" asp-action="Index"
+                       class="btn btn-success btn-lg rounded-pill px-4">
+                        🛒 View Cart
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background-color: #f9fafb;
+    }
+
+    .card {
+        background-color: #ffffff;
+        border-radius: 16px;
+        border: none;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: #007bff;
+        color: #fff;
+    }
+
+    .btn-success {
+        font-weight: bold;
+    }
+</style>

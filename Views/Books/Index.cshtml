@@ -1,0 +1,111 @@
+﻿@model IEnumerable<OnlineBookStore.Models.Book>
+
+@{
+    ViewData["Title"] = "Books";
+    var categories = ViewBag.Categories as List<OnlineBookStore.Models.Category>;
+    var userRole = Context.Session.GetString("UserRole");
+    var userName = Context.Session.GetString("UserName");
+}
+
+<h1 class="mb-4">Books</h1>
+
+<!-- Category Filter -->
+<div class="mb-3">
+    <form method="get" asp-action="Index" class="d-flex gap-2">
+        <select name="categoryId" class="form-select w-auto">
+            <option value="">All Categories</option>
+            @foreach (var cat in categories)
+            {
+                <option value="@cat.CategoryID">@cat.CategoryName</option>
+
+            }
+        </select>
+        <button type="submit" class="btn btn-primary">Filter</button>
+    </form>
+</div>
+
+<!-- Add Book button for Admin only -->
+@if (userRole == "Admin")
+{
+    <p>
+        <a asp-action="Create" class="btn btn-success mb-3">➕ Add New Book</a>
+    </p>
+}
+
+<!-- Books Table -->
+<div class="table-responsive">
+    <table class="table table-bordered table-hover text-center align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>Cover</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Genre</th>
+                <th>Price</th>
+                <th>Categories</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var book in Model)
+            {
+                <tr>
+                    <td>
+                        <img src="@(string.IsNullOrEmpty(book.CoverImage) ? Url.Content("~/images/no-image.png") : book.CoverImage)"
+                             alt="@book.Title"
+                             style="height: 100px; object-fit: cover;" />
+                    </td>
+                    <td>@book.Title</td>
+                    <td>@book.Author</td>
+                    <td>@book.Genre</td>
+                    <td>₹ @book.Price.ToString("F2")</td>
+                    <td>
+                        @if (book.BookCategories != null && book.BookCategories.Any())
+                        {
+                            <ul class="list-unstyled">
+                                @foreach (var bc in book.BookCategories)
+                                {
+                                    <li>@bc.Category.CategoryName</li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <span class="text-muted">No Categories</span>
+                        }
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <!-- Always show Details -->
+                            <a asp-action="Details" asp-route-id="@book.BookID" class="btn btn-info btn-sm">Details</a>
+
+                            <!-- Admin Actions -->
+                            @if (userRole == "Admin")
+                            {
+                                <a asp-action="Edit" asp-route-id="@book.BookID" class="btn btn-warning btn-sm">Edit</a>
+                                <a asp-action="Delete" asp-route-id="@book.BookID" class="btn btn-danger btn-sm">Delete</a>
+                            }
+                            else
+                            {
+                                <!-- Customer Actions -->
+                                @if (!string.IsNullOrEmpty(userName))
+                                {
+                                    <a asp-controller="Cart" asp-action="Add" asp-route-id="@book.BookID"
+                                       class="btn btn-success btn-sm" title="Add to Cart">🛒</a>
+                                    <a asp-controller="Wishlist" asp-action="Add" asp-route-id="@book.BookID"
+                                       class="btn btn-outline-danger btn-sm" title="Add to Wishlist">❤️</a>
+                                }
+                                else
+                                {
+                                    <!-- Disabled if not logged in -->
+                                    <button class="btn btn-secondary btn-sm" disabled title="Login to add to cart">🛒</button>
+                                    <button class="btn btn-secondary btn-sm" disabled title="Login to add to wishlist">❤️</button>
+                                }
+                            }
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

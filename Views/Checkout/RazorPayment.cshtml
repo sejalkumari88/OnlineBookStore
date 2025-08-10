@@ -1,0 +1,90 @@
+﻿@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    ViewData["Title"] = "Online Payment";
+    var tokens = Antiforgery.GetAndStoreTokens(HttpContextAccessor.HttpContext);
+
+    var razorpayOrderId = ViewBag.RazorpayOrderId;
+    var amount = Convert.ToDecimal(ViewBag.Amount);
+    var key = ViewBag.Key;
+    var currency = ViewBag.Currency;
+    var orderId = ViewBag.OrderId;
+    var name = ViewBag.Name;
+    var email = ViewBag.Email;
+    var contact = ViewBag.Contact;
+}
+
+<div class="container mt-5 text-center">
+    <h2 class="text-primary fw-bold mb-3">💳 Complete Your Payment</h2>
+    <p class="text-muted">Please complete the payment using UPI, Card, NetBanking, or Wallets.</p>
+
+    <button id="rzp-button" class="btn btn-success btn-lg px-5 mt-4">
+        Pay Now ₹@((amount / 100.0M).ToString("F2"))
+    </button>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    var options = {
+        "key": "@key",
+        "amount": "@amount",
+        "currency": "@currency",
+        "name": "@name",
+        "description": "Order Payment",
+        "order_id": "@razorpayOrderId",
+        "prefill": {
+            "name": "@name",
+            "email": "@email",
+            "contact": "@contact"
+        },
+        "theme": {
+            "color": "#3399cc"
+        },
+        "handler": function (response) {
+            var form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/Checkout/VerifyPayment';
+
+            var token = document.createElement('input');
+            token.name = '__RequestVerificationToken';
+            token.value = '@tokens.RequestToken';
+            form.appendChild(token);
+
+            var paymentId = document.createElement('input');
+            paymentId.name = 'razorpay_payment_id';
+            paymentId.value = response.razorpay_payment_id;
+            form.appendChild(paymentId);
+
+            var razorpayOrder = document.createElement('input');
+            razorpayOrder.name = 'razorpay_order_id';
+            razorpayOrder.value = response.razorpay_order_id;
+            form.appendChild(razorpayOrder);
+
+            var signature = document.createElement('input');
+            signature.name = 'razorpay_signature';
+            signature.value = response.razorpay_signature;
+            form.appendChild(signature);
+
+            var dbOrderId = document.createElement('input');
+            dbOrderId.name = 'orderId';
+            dbOrderId.value = '@orderId';
+            form.appendChild(dbOrderId);
+
+            document.body.appendChild(form);
+            form.submit();
+        },
+        "modal": {
+            "ondismiss": function () {
+                alert("Payment cancelled. You can retry.");
+                window.location.href = "/Checkout/Index";
+            }
+        }
+    };
+
+    var rzp = new Razorpay(options);
+    document.getElementById('rzp-button').onclick = function (e) {
+        rzp.open();
+        e.preventDefault();
+    };
+</script>

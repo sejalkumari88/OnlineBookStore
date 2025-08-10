@@ -1,0 +1,106 @@
+﻿@model OnlineBookStore.Models.Book
+
+@{
+    ViewData["Title"] = "Edit Book";
+    var categories = ViewBag.Categories as List<OnlineBookStore.Models.Category>;
+    var selectedCategories = ViewBag.SelectedCategories as List<int>;
+}
+
+<div class="container mt-4">
+    <div class="card shadow-lg p-4">
+        <h2 class="text-warning mb-4">✏️ Edit Book</h2>
+
+        <form asp-action="Edit" method="post" enctype="multipart/form-data" class="row g-3">
+            <input type="hidden" asp-for="BookID" />
+
+            <!-- Title & Author -->
+            <div class="col-md-6">
+                <label asp-for="Title" class="form-label fw-bold"></label>
+                <input asp-for="Title" class="form-control" placeholder="Enter book title" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Author" class="form-label fw-bold"></label>
+                <input asp-for="Author" class="form-control" placeholder="Enter author name" />
+                <span asp-validation-for="Author" class="text-danger"></span>
+            </div>
+
+            <!-- Genre & Price -->
+            <div class="col-md-6">
+                <label asp-for="Genre" class="form-label fw-bold"></label>
+                <input asp-for="Genre" class="form-control" placeholder="e.g. Fiction, Mystery" />
+                <span asp-validation-for="Genre" class="text-danger"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Price" class="form-label fw-bold"></label>
+                <input asp-for="Price" class="form-control" type="number" step="0.01" placeholder="Enter price" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+
+            <!-- Stock & Image -->
+            <div class="col-md-6">
+                <label asp-for="Stock" class="form-label fw-bold"></label>
+                <input asp-for="Stock" class="form-control" placeholder="Enter stock quantity" />
+                <span asp-validation-for="Stock" class="text-danger"></span>
+            </div>
+            <div class="col-md-6">
+                <label for="imageFile" class="form-label fw-bold">Upload New Cover Image</label>
+                <input type="file" name="imageFile" class="form-control" onchange="previewImage(event)" />
+                <img id="coverPreview" src="@Model.CoverImage" alt="Current Cover" class="img-thumbnail mt-2" style="max-height:150px;" />
+            </div>
+
+            <!-- Description -->
+            <div class="col-12">
+                <label asp-for="Description" class="form-label fw-bold"></label>
+                <textarea asp-for="Description" class="form-control" rows="3" placeholder="Write a short description"></textarea>
+            </div>
+
+            <!-- Category Multi-Select -->
+            <div class="col-12">
+                <label class="form-label fw-bold">Select Categories</label>
+                <select name="selectedCategories" class="form-select select2" multiple>
+                    @foreach (var cat in categories)
+                    {
+                        var isSelected = selectedCategories.Contains(cat.CategoryID);
+                        <option value="@cat.CategoryID" selected="@(isSelected ? "selected" : null)">
+                            @cat.CategoryName
+                        </option>
+                    }
+                </select>
+
+            </div>
+
+            <!-- Buttons -->
+            <div class="col-12 d-flex justify-content-between mt-4">
+                <button type="submit" class="btn btn-warning px-4"><i class="bi bi-pencil-square"></i> Update</button>
+                <a asp-action="Index" class="btn btn-secondary px-4"><i class="bi bi-arrow-left"></i> Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <!-- Select2 for better multi-select dropdown -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.select2').select2({
+                placeholder: "Select categories",
+                allowClear: true
+            });
+        });
+
+        function previewImage(event) {
+            var reader = new FileReader();
+            reader.onload = function () {
+                var output = document.getElementById('coverPreview');
+                output.src = reader.result;
+                output.style.display = 'block';
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+    </script>
+}
