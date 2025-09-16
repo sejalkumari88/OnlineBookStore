@@ -26,4 +26,4 @@ This is a full-stack Online Book Store project built using:
 
 ---
 
-Made by Sejal Kumari and Sami Quraishi
+Made by Sejal Kumari and Sami Quraishi.
